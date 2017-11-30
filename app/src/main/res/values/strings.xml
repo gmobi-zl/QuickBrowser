@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">易用汇</string>
+
+    <string name="app_start_msg_title">系统提示</string>
+    <string name="app_start_msg_body">欢迎使用易用汇客户端软件，客户端使用完全免费，在使用过程中会产生流量费，流量费请咨询当地运营商，是否允许建立连接?</string>
+    <string name="app_start_msg_notshow">不再提示</string>
+    <string name="app_start_msg_ok">确定</string>
+    <string name="app_start_msg_cancel">退出</string>
+</resources>
