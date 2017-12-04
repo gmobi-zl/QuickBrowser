@@ -16,13 +16,13 @@ public class BaseToastActivity {
 	public static final int UNSET = Integer.MIN_VALUE;
 
     protected Context context;
-    protected Bundle params;
+    //protected Bundle params;
     protected WindowManager windowManager;
     protected View container = null;
 
     public BaseToastActivity(Context context, Bundle params){
         this.context = context;
-        this.params = params;
+        //this.params = params;
 		windowManager = (WindowManager) context.getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
     }
 
