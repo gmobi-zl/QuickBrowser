@@ -18,6 +18,8 @@ import android.view.View;
 import android.view.Window;
 import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import java.util.List;
 import java.util.concurrent.Exchanger;
@@ -28,8 +30,9 @@ public class MainActivity extends Activity {
     private static final String DEFAULT_URL = "http://www.baidu.com";
     private static final String UC_BROWSER_PACKAGENAME = "com.UCMobile";
     private static int MSG_DISMISS_ACTIVITY = 997;
+    private static int OPEN_UC_BROWSER = 1997;
     private BaseToastActivity toastBg = null;
-
+    private Context mContext;
     private Handler mCloseHdl = new Handler(){
         @Override
         public void handleMessage(Message msg) {
@@ -40,6 +43,20 @@ public class MainActivity extends Activity {
                     toastBg = null;
                 }
                 finish();
+            } else if (OPEN_UC_BROWSER == msg.what){
+
+                try{
+                    Intent intent = new Intent();
+                    intent.setAction(Intent.ACTION_VIEW);
+                    //intent.setAction("android.intent.action.VIEW");
+                    Uri content_url = Uri.parse(DEFAULT_URL);
+                    intent.setData(content_url);
+                    intent.setClassName(UC_BROWSER_PACKAGENAME,"com.UCMobile.main.UCMobile");
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    mContext.startActivity(intent);
+                } catch (Exception e){
+
+                }
             }
         }
     };
@@ -49,14 +66,20 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         //requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
-
+        mContext = this;
         boolean isShowDialog = SharedPrefsUtil.getValue(this, START_DIALOG_FLAG, true);
         if (isShowDialog)
             showStartMsgDialog(this);
         else{
             startUCBrowser(this);
+            //showStartBackground(this);
             delayClose();
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
     }
 
     private void showStartMsgDialog(final Context context){
@@ -93,17 +116,6 @@ public class MainActivity extends Activity {
 
     private void delayClose(){
         mCloseHdl.sendEmptyMessageDelayed(MSG_DISMISS_ACTIVITY, 3000);
-//        new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                try {
-//                    Thread.sleep(3000);
-//
-//                } catch (Exception e){
-//
-//                }
-//            }
-//        }).start();
     }
 
     private void closeMe(){
@@ -114,18 +126,11 @@ public class MainActivity extends Activity {
     private void startUCBrowser(Context context){
         try {
             if (hasApplication(context, UC_BROWSER_PACKAGENAME)){
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_VIEW);
-                //intent.setAction("android.intent.action.VIEW");
-                Uri content_url = Uri.parse(DEFAULT_URL);
-                intent.setData(content_url);
-                intent.setClassName(UC_BROWSER_PACKAGENAME,"com.UCMobile.main.UCMobile");
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(intent);
-
-                //if (isRunning(context) == false){
+                if (isRunning(context) == false){
                     showStartBackground(context);
-                //}
+                }
+
+                mCloseHdl.sendEmptyMessageDelayed(OPEN_UC_BROWSER, 500);
             } else{
                 openLinkInDefaultBrowser(context, DEFAULT_URL);
             }
@@ -136,9 +141,18 @@ public class MainActivity extends Activity {
 
     private void showStartBackground(Context context){
         toastBg = new BaseToastActivity(context, null);
+
+        RelativeLayout container = new RelativeLayout(context);
+        RelativeLayout.LayoutParams rlc = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        container.setLayoutParams(rlc);
         ImageView ivBg = new ImageView(context);
-        ivBg.setImageDrawable(context.getDrawable(R.drawable.start_bg));
-        toastBg.setContentView(ivBg);
+        RelativeLayout.LayoutParams rlpc = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        ivBg.setLayoutParams(rlpc);
+        ivBg.setImageDrawable(context.getDrawable(R.drawable.start_splash));
+        ivBg.setScaleType(ImageView.ScaleType.FIT_XY);
+        container.addView(ivBg);
+
+        toastBg.setContentView(container);
     }
 
     private boolean hasApplication(Context context, String packageName){

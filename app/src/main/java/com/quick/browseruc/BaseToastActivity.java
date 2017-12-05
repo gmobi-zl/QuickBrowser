@@ -66,10 +66,10 @@ public class BaseToastActivity {
 		if (x != UNSET) params.x = x;
 		if (y != UNSET) params.y = y;
 		params.format = PixelFormat.TRANSLUCENT;
-		params.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
-        //        | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
-		params.windowAnimations = android.R.style.Animation_Toast;
-		//params.type = WindowManager.LayoutParams.TYPE_TOAST;
+		params.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+		//params.windowAnimations = android.R.style.Animation_Toast;
+		params.type = WindowManager.LayoutParams.TYPE_TOAST;
         windowManager.addView(container, params);
 	}
 
